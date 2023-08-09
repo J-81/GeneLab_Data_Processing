@@ -65,6 +65,7 @@ jobs:
       - name: Run nf-test on minimal core test datasets
         run: |
           cd ${GITHUB_WORKSPACE}/RNAseq/Workflow_Documentation/NF_RCP-F/workflow_code/
+          bash bin/prepull_singularity.sh
           ${{ steps.nf-test.outputs.bin_path}} test \
             --profile=${{ matrix.profile }} \
             --tag core \
