@@ -66,6 +66,7 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}/RNAseq/Workflow_Documentation/NF_RCP-F/workflow_code/
           bash bin/prepull_singularity.sh
+          export NXF_SINGULARITY_CACHEDIR=$PWD/singularity
           ${{ steps.nf-test.outputs.bin_path}} test \
             --profile=${{ matrix.profile }} \
             --tag core \
