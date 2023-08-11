@@ -2,6 +2,38 @@
  * Processes related to genome and annotations
  */
 
+import java.nio.file.FileVisitOption
+import java.nio.file.FileVisitResult
+import java.nio.file.FileVisitor
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.SimpleFileVisitor
+import java.nio.file.attribute.BasicFileAttributes
+
+def calculateTotalSize(Path directory) {
+    long totalSize = 0
+
+    directory = directory.target
+
+    FileVisitor<Path> fileVisitor = new SimpleFileVisitor<Path>() {
+        @Override
+        FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+            totalSize += attrs.size()
+            return FileVisitResult.CONTINUE
+        }
+
+        @Override
+        FileVisitResult visitFileFailed(Path file, IOException exc) {
+            println("Error visiting: ${file} - ${exc.message}")
+            return FileVisitResult.CONTINUE
+        }
+    }
+
+    Files.walkFileTree(directory, EnumSet.noneOf(FileVisitOption.class), Integer.MAX_VALUE, fileVisitor)
+
+    return totalSize
+}
+
 process BUILD_STAR {
   // Builds STAR index, this is ercc-spike-in, organism, read length and ensembl version specific
   tag "Refs:${ genomeFasta },${ genomeGtf }, Ensembl.V:${ensemblVersion} MaxReadLength:${ max_read_length }${ params.genomeSubsample ? ' GenomeSubsample: ' + params.genomeSubsample : ''}"
@@ -62,7 +94,7 @@ process ALIGN_STAR {
   // TODO: make '--alignMatesGapMax 1000000' conditional on PE
   tag "Sample: ${ meta.id }"
   label 'maxCPU'
-  label 'big_mem'
+  memory { calculateTotalSize(STAR_INDEX_DIR).B > 8.GB ? calculateTotalSize(STAR_INDEX_DIR).B : 8.GB }
 
   input:
     tuple val( meta ), path( reads ), path(STAR_INDEX_DIR)
@@ -78,7 +110,7 @@ process ALIGN_STAR {
   script:
     """
     STAR --twopassMode Basic \
-    --limitBAMsortRAM ${ task.memory.toBytes() } \
+    --limitBAMsortRAM { task.memory.toBytes() } \
     --outFilterType BySJout \
     --outSAMunmapped Within \
     --genomeDir ${ STAR_INDEX_DIR } \
