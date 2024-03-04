@@ -23,6 +23,6 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: $PKG_NAME  # Replace with your desired artifact name
-          path:  /home/runner/work/GeneLab_Data_Processing/GeneLab_Data_Processing/NF_RCP-F.zip
+          name: ${{ env.PKG_NAME }}  # Replace with your desired artifact name
+          path:  ${{ env.PKG_FULLPATH }}
           if-no-files-found: error # fail if archive isn't uploaded for any reason
