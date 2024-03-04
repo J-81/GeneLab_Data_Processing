@@ -14,20 +14,17 @@ jobs:
         run: |
           cd RNAseq/Workflow_Documentation  # Replace with the path to your folder
           ls -l 
-          PKG_DIR=$(realpath "NF_RCP*")
+          echo "PKG_DIR=$(realpath NF_RCP*)" >> $GITHUB_ENV
           echo "## Setting PKG_DIR context: $PKG_DIR"
-          # Store PKG_DIR in workflow context
-          core.setOutput('PKG_DIR', "$PKG_DIR")
 
       - uses: actions/github-script@v5
         with:
           script: |
             # Retrieve PKG_DIR from context
-            PKG_DIR=${{ github.context.PKG_DIR }}
             echo "## Using PKG_DIR from context: $PKG_DIR"
             zip -r $(basename $PKG_DIR).zip $PKG_DIR
 
       - uses: actions/upload-artifact@v2
         with:
-          name: ${{ github.context.PKG_DIR }}  # Replace with your desired artifact name
-          path: ${{ github.context.PKG_DIR }}.zip
+          name: $PKG_DIR  # Replace with your desired artifact name
+          path: $PKG_DIR.zip
