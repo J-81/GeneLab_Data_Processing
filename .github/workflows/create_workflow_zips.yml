@@ -10,20 +10,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create archive
+      - name: Set env variables
         run: |
           cd RNAseq/Workflow_Documentation  # Replace with the path to your folder
-          ls -l 
           echo "PKG_DIR=$(realpath NF_RCP*)" >> $GITHUB_ENV
-          echo "## Setting PKG_DIR context: $PKG_DIR"
+          echo "PKG_NAME=$(basename $(realpath NF_RCP*))" >> $GITHUB_ENV
 
       - name: zip package
         run: |
-            zip -r $(basename $PKG_DIR).zip $PKG_DIR
-            echo PKG_FULLPATH=$(realpath $(basename $PKG_DIR).zip) >> $GITHUB_ENV
+            zip -r $PKG_NAME.zip $PKG_DIR
+            echo PKG_FULLPATH=$(realpath $PKG_NAME.zip) >> $GITHUB_ENV
 
       - uses: actions/upload-artifact@v4
         with:
-          name: $PKG_DIR  # Replace with your desired artifact name
-          path: $PKG_DIR.zip
+          name: $PKG_NAME  # Replace with your desired artifact name
+          path: $PKG_FULLPATH
           if-no-files-found: error # fail if archive isn't uploaded for any reason
