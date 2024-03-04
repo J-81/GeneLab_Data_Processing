@@ -13,10 +13,11 @@ jobs:
       - name: Create archive
         run: |
           cd RNAseq/Workflow_Documentation  # Replace with the path to your folder
+          ls -l 
           PKG_DIR=$(realpath "NF_RCP*")
           echo "## Setting PKG_DIR context: $PKG_DIR"
           # Store PKG_DIR in workflow context
-          core.setOutput('PKG_DIR', $PKG_DIR)
+          core.setOutput('PKG_DIR', "$PKG_DIR")
 
       - uses: actions/github-script@v5
         with:
