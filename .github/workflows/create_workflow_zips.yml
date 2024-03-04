@@ -20,8 +20,6 @@ jobs:
       - uses: actions/github-script@v5
         with:
           script: |
-            # Retrieve PKG_DIR from context
-            echo "## Using PKG_DIR from context: $PKG_DIR"
             zip -r $(basename $PKG_DIR).zip $PKG_DIR
 
       - uses: actions/upload-artifact@v2
