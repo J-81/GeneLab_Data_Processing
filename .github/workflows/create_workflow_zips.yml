@@ -17,9 +17,8 @@ jobs:
           echo "PKG_DIR=$(realpath NF_RCP*)" >> $GITHUB_ENV
           echo "## Setting PKG_DIR context: $PKG_DIR"
 
-      - uses: actions/github-script@v5
-        with:
-          script: |
+      - name: zip package
+        run: |
             zip -r $(basename $PKG_DIR).zip $PKG_DIR
 
       - uses: actions/upload-artifact@v2
